@@ -17,6 +17,7 @@
       <el-container>
         <!-- 左侧导航栏 -->
         <el-aside width="200px" class="aside">
+            <!-- 用户管理 -->
           <el-menu
             default-active="2"
             class="el-menu-vertical-demo"
@@ -27,10 +28,26 @@
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-location"></i>
-                <span>导航一</span>
+                <span>用户管理</span>
               </template>
-                <el-menu-item index="users"><i class="el-icon-menu"></i>选项1</el-menu-item>
-                <el-menu-item index="1-2"><i class="el-icon-menu"></i>选项2</el-menu-item>
+                <el-menu-item index="users"><i class="el-icon-menu"></i>用户列表</el-menu-item>
+            </el-submenu>
+          </el-menu>
+          <!-- 权限管理 -->
+           <el-menu
+            default-active="2"
+            class="el-menu-vertical-demo"
+            @open="handleOpen"
+            @close="handleClose"
+            router
+          >
+            <el-submenu index="1">
+              <template slot="title">
+                <i class="el-icon-location"></i>
+                <span>权限管理</span>
+              </template>
+                <el-menu-item index="roles"><i class="el-icon-menu"></i>角色列表</el-menu-item>
+                <el-menu-item index="rights"><i class="el-icon-menu"></i>权限列表</el-menu-item>
             </el-submenu>
           </el-menu>
         </el-aside>
@@ -76,7 +93,7 @@ export default {
     background-color: pink;
   }
   .main {
-    background-color: skyblue;
+    background-color: #e9eef3;
   }
 }
 </style>

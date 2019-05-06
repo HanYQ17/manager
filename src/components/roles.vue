@@ -9,13 +9,8 @@
 
     <!-- 栅格 输入框 按钮 -->
     <el-row :gutter="10">
-      <el-col :span="6">
-        <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </el-col>
-      <el-col :span="12">
-        <el-button type="success" plain>添加用户</el-button>
+      <el-col :span="24">
+        <el-button plain>添加角色</el-button>
       </el-col>
     </el-row>
 
@@ -39,7 +34,7 @@
 
 <script>
 export default {
-  name: "users",
+  name: "roles",
   data() {
     return {
       tableData: [
