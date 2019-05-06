@@ -8,9 +8,9 @@ import index from './components/index.vue'
 
 // 路由规则
 const routes = [
-    { path: '/', redirect: '/index' },
+    // { path: '/', redirect: '/index' },
     {path:'/login',component:login},
-    {path:'/index',component:index},
+    {path:'/',component:index},
 
 ]
 
