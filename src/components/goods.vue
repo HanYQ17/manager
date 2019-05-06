@@ -1,11 +1,23 @@
 <template>
-  <div class="users">
+  <div>
     <!-- 面包屑 -->
     <el-breadcrumb class="my_breadcrumb" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限列表</el-breadcrumb-item>
+      <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+      <el-breadcrumb-item>商品列表</el-breadcrumb-item>
     </el-breadcrumb>
+
+    <!-- 栅格 输入框 按钮 -->
+    <el-row :gutter="10">
+      <el-col :span="6">
+        <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
+          <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+      </el-col>
+      <el-col :span="12">
+        <el-button type="warning" plain>添加商品</el-button>
+      </el-col>
+    </el-row>
 
     <!-- 表格 -->
     <el-table :data="tableData" style="width: 100%">
@@ -14,12 +26,20 @@
       <el-table-column prop="address" label="地址"></el-table-column>
     </el-table>
 
+    <!-- 分页 -->
+    <el-pagination
+      :current-page="1"
+      :page-sizes="[2, 4, 6, 8]"
+      :page-size="6"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="400"
+    ></el-pagination>
   </div>
 </template>
 
 <script>
 export default {
-  name: "rights",
+  name: "goods",
   data() {
     return {
       tableData: [

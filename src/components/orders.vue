@@ -3,8 +3,8 @@
     <!-- 面包屑 -->
     <el-breadcrumb class="my_breadcrumb" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限列表</el-breadcrumb-item>
+      <el-breadcrumb-item>订单管理</el-breadcrumb-item>
+      <el-breadcrumb-item>订单列表</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 表格 -->
@@ -14,12 +14,20 @@
       <el-table-column prop="address" label="地址"></el-table-column>
     </el-table>
 
+    <!-- 分页 -->
+    <el-pagination
+      :current-page="1"
+      :page-sizes="[2, 4, 6, 8]"
+      :page-size="6"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="400"
+    ></el-pagination>
   </div>
 </template>
 
 <script>
 export default {
-  name: "rights",
+  name: "orders",
   data() {
     return {
       tableData: [
