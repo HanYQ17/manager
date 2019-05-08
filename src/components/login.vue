@@ -19,7 +19,10 @@
 
 <script>
 export default {
-  name: "login"
+  name: "login",
+  created() {
+    this.$request.sayHi()
+  },
 };
 </script>
 

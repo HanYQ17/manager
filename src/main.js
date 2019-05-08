@@ -7,6 +7,11 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
+// 导入抽取的网络请求
+import request from './/libs/http'
+Vue.use(request)
+
+
 // 导入路由
 import router from './router'  
 

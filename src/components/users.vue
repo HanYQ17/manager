@@ -10,7 +10,7 @@
     <!-- 栅格 输入框 按钮 -->
     <el-row :gutter="10">
       <el-col :span="6">
-        <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
+        <el-input placeholder="请输入内容" class="input-with-select">
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </el-col>
