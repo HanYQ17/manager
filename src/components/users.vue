@@ -15,7 +15,7 @@
         </el-input>
       </el-col>
       <el-col :span="12">
-        <el-button type="success" plain>添加用户</el-button>
+        <el-button type="success" plain @click="addVisible=true">添加用户</el-button>
       </el-col>
     </el-row>
 
@@ -27,13 +27,30 @@
       <el-table-column prop="mobile" label="电话" width="180"></el-table-column>
       <el-table-column prop="mg_state" label="用户状态" width="180">
         <template slot-scope="scope">
-        <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949" @change="stateChange(scope.row)"></el-switch>
+          <el-switch
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="stateChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" plain size="mini" @click="handleEdit(scope.$index, scope.row)"></el-button>
-          <el-button type="danger" icon="el-icon-delete" plain size="mini" @click="handleDelete(scope.$index, scope.row)"></el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            plain
+            size="mini"
+            @click="handleEdit(scope.$index, scope.row)"
+          ></el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            plain
+            size="mini"
+            @click="handleDelete(scope.$index, scope.row)"
+          ></el-button>
           <el-button type="success" icon="el-icon-check" plain size="mini"></el-button>
         </template>
       </el-table-column>
@@ -47,6 +64,28 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="400"
     ></el-pagination>
+
+    <!-- 添加用户框 -->
+    <el-dialog title="添加用户" :visible.sync="addVisible">
+      <el-form :model="addForm" :rules="addRules" ref="addForm">
+        <el-form-item label="用户名" label-width="120px" prop="username">
+          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" label-width="120px" prop="password">
+          <el-input v-model="addForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="120px" prop="email">
+          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="120px" prop="mobile">
+          <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -62,15 +101,46 @@ export default {
         query: "", //查询的参数
         pagenum: 1, //页码
         pagesize: 10 //页容量
+      },
+      // 是否显示新增框
+      addVisible: false, //默认是false
+      // 新增数据
+      addForm: {
+        username: "", //用户名
+        password: "", //邮箱
+        email: "", //密码
+        mobile: "" //电话
+      },
+      // 新增数据验证
+      addRules: {
+        username: [
+          { required: true, message: "用户名不能为空", trigger: "blur" },
+          { min: 1, max: 5, message: "长度在 1 到 5 个字符", trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "密码也不能为空", trigger: "blur" },
+          { min: 1, max: 12, message: "长度在 1 到 12 个字符", trigger: "blur" }
+        ],
+        email:[],
+        mobile:[]
       }
     };
   },
   methods: {
-    // 滑块  使用change 值改变事件
-    stateChange(row){
-      this.$request.updateUserStatus({id:row.id,type:row.mg_state}).then(res=>{
-        console.log(res);
-      })
+    // 获取用户列表数据
+    getUsers() {
+      this.$request.getUsers(this.userData).then(res => {
+        // console.log(res);
+        this.tableData = res.data.data.users;
+      });
+    },
+    // 修改用户状态  使用change 值改变事件
+    stateChange(row) {
+      this.$request
+        .updateUserStatus({ id: row.id, type: row.mg_state })
+        .then(res => {
+          console.log(res);
+        });
     },
     // 编辑
     handleEdit(index, row) {
@@ -78,16 +148,54 @@ export default {
     },
     // 删除
     handleDelete(index, row) {
-      console.log(index, row);
+      // console.log(index, row);
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$request.deleteUserById(row.id).then(res => {
+            // console.log(res);
+            if (res.data.meta.status == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+              this.getUsers();
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+      // this.$request.deleteUserById(row.id)
+      // this.getUsers();
     },
-    
+    // 新增数据验证
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          // 添加用户
+          this.$request.addUser(this.addForm).then(res => {
+            console.log(res);
+            this.addVisible = false; //关闭弹窗
+            this.$message.success("添加成功"); //提示
+            this.getUsers(); //重新渲染
+            this.$refs[formName].resetFields(); //重置表单
+          });
+        } else {
+          this.$message.error("格式不对");
+          return false;
+        }
+      });
+    }
   },
   created() {
-    // 获取用户列表数据
-    this.$request.getUsers(this.userData).then(res => {
-      console.log(res);
-      this.tableData = res.data.data.users;
-    });
+    this.getUsers();
   }
 };
 </script>

@@ -35,9 +35,17 @@ const request = {
             // headers:{Authorization:window.sessionStorage.getItem('token')}  //请求头,带token数据    使用了拦截器就不需要了
         })
     },
-    // 修改用户状态  滑块
+    // 修改用户状态 
     updateUserStatus(params){
         return axios.put(`users/${params.id}/state/${params.type}`)
+    },
+    // 添加用户
+    addUser(params){
+        return axios.post(`users`,params)
+    },
+    // 删除用户
+    deleteUserById(id){
+        return axios.delete(`users/${id}`)
     }
 }
 
