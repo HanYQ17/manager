@@ -9,7 +9,7 @@ Vue.use(ElementUI);
 
 
 // 导入抽取的网络请求
-import request from './/libs/http'
+import request from './libs/http'
 Vue.use(request)
 
 

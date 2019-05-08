@@ -21,9 +21,22 @@
 
     <!-- 表格 -->
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="date" label="日期" width="180"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-      <el-table-column prop="address" label="地址"></el-table-column>
+      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+      <el-table-column prop="mobile" label="电话" width="180"></el-table-column>
+      <el-table-column prop="mg_state" label="用户状态" width="180">
+        <template slot-scope="scope">
+        <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" plain size="mini" @click="handleEdit(scope.$index, scope.row)"></el-button>
+          <el-button type="danger" icon="el-icon-delete" plain size="mini" @click="handleDelete(scope.$index, scope.row)"></el-button>
+          <el-button type="success" icon="el-icon-check" plain size="mini"></el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->
@@ -42,38 +55,41 @@ export default {
   name: "users",
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ]
+      // 表格数据
+      tableData: [],
+      // 获取用户列表需要的参数
+      userData: {
+        query: "", //查询的参数
+        pagenum: 1, //页码
+        pagesize: 10 //页容量
+      }
     };
+  },
+  methods: {
+    // 编辑
+    handleEdit(index, row) {
+      console.log(index, row);
+    },
+    // 删除
+    handleDelete(index, row) {
+      console.log(index, row);
+    }
+  },
+  created() {
+    // 获取用户列表数据
+    this.$request.getUsers(this.userData).then(res => {
+      console.log(res);
+      this.tableData = res.data.data.users;
+    });
   }
 };
 </script>
 
 <style lang="scss">
-.my_breadcrumb{
-    height: 45px;
-    line-height: 45px;
-    background-color: #d3dce6;
-    padding-left: 10px;
+.my_breadcrumb {
+  height: 45px;
+  line-height: 45px;
+  background-color: #d3dce6;
+  padding-left: 10px;
 }
 </style>

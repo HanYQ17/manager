@@ -10,7 +10,7 @@
             <h2 class="title">后台系统管理</h2>
           </el-col>
           <el-col :span="1" class="out_login">
-            <el-button type="danger" size="small" round>退出</el-button>
+            <el-button type="danger" size="small" round @click="login">退出</el-button>
           </el-col>
         </el-row>
       </el-header>
@@ -76,8 +76,28 @@
 
 <script>
 export default {
-  name: "index"
-};
+  name: "index",
+  data() {
+    return {
+      
+    }
+  },
+  beforeCreate() {
+    if(!sessionStorage.getItem('token')){  //验证是否有token
+      this.$message.warning('请先登录')
+      this.$router.push('login')
+    }
+  },
+  methods: {
+    // 退出登录
+    login(){
+      sessionStorage.removeItem('token')
+      this.$message.success('退出成功')
+      this.$router.push('login')
+    }
+  },
+  
+}
 </script>
 
 <style lang="scss">

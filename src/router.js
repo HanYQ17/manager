@@ -20,6 +20,7 @@ const routes = [
     // { path: '/', redirect: '/index' },
     {path:'/login',component:login},
     {path:'/',component:index,children:[
+        {path:'',redirect:'users'},  //重定向
         {path:'users',component:users},  //嵌套路由不需要写 '/'
         {path:'roles',component:roles}, 
         {path:'rights',component:rights},  

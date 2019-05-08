@@ -32,15 +32,15 @@ export default {
       loginRules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 2, max: 8, message: "长度在 3 到 5 个字符", trigger: "change" }
+          { min: 2, max: 8, message: "长度在 2 到 8 个字符", trigger: "change" }
         ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
-            min: 6,
+            min: 2,
             max: 12,
-            message: "长度在 3 到 5 个字符",
-            trigger: "change"
+            message: "长度在 2 到 12 个字符",
+            trigger: "blur"
           }
         ]
       }
@@ -51,18 +51,29 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          // 发请求
+          this.$request.login(this.loginFrom).then(res=>{
+            console.log(res);
+            if(res.data.meta.status==400){
+              this.$message.warning(res.data.meta.msg)
+            }else if(res.data.meta.status==200){
+              this.$message.success(res.data.meta.msg)
+              this.$router.push('/')  //跳转  编程式导航
+              sessionStorage.setItem('token',res.data.data.token) //存储token
+            }
+          })
         } else {
-          console.log("error submit!!");
+          this.$message.error('格式不对')
           return false;
         }
-      });
+      })
     },
     // 重置
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    }
-  }
+    },
+    
+  },
 };
 </script>
 
