@@ -27,7 +27,7 @@
       <el-table-column prop="mobile" label="电话" width="180"></el-table-column>
       <el-table-column prop="mg_state" label="用户状态" width="180">
         <template slot-scope="scope">
-        <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949" @change="stateChange(scope.row)"></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -66,6 +66,12 @@ export default {
     };
   },
   methods: {
+    // 滑块  使用change 值改变事件
+    stateChange(row){
+      this.$request.updateUserStatus({id:row.id,type:row.mg_state}).then(res=>{
+        console.log(res);
+      })
+    },
     // 编辑
     handleEdit(index, row) {
       console.log(index, row);
@@ -73,7 +79,8 @@ export default {
     // 删除
     handleDelete(index, row) {
       console.log(index, row);
-    }
+    },
+    
   },
   created() {
     // 获取用户列表数据

@@ -32,9 +32,12 @@ const request = {
     getUsers(params){
         return axios.get('users',{
             params,
-            // params:params,
             // headers:{Authorization:window.sessionStorage.getItem('token')}  //请求头,带token数据    使用了拦截器就不需要了
         })
+    },
+    // 修改用户状态  滑块
+    updateUserStatus(params){
+        return axios.put(`users/${params.id}/state/${params.type}`)
     }
 }
 
