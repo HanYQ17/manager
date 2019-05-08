@@ -1,16 +1,18 @@
 <template>
   <div class="login">
     <div class="content_box">
-        <h3 class="title">用户登录</h3>
-      <el-form label-position="top" label-width="80px">
-        <el-form-item label="用户名">
-          <el-input></el-input>
+      <h3 class="title">用户登录</h3>
+      <el-form label-position="top" label-width="80px" :model="loginFrom" :rules="loginRules" ref="loginForm">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="loginFrom.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
-          <el-input></el-input>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="loginFrom.password" type="password"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="my_btn">登录</el-button>
+          <!-- <el-button type="primary" class="my_btn">登录</el-button> -->
+          <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+          <el-button @click="resetForm('loginForm')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -20,9 +22,47 @@
 <script>
 export default {
   name: "login",
-  created() {
-    this.$request.sayHi()
+  data() {
+    return {
+      loginFrom: {
+        username: "",
+        password: ""
+      },
+      // 表单验证提示
+      loginRules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 2, max: 8, message: "长度在 3 到 5 个字符", trigger: "change" }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 6,
+            max: 12,
+            message: "长度在 3 到 5 个字符",
+            trigger: "change"
+          }
+        ]
+      }
+    };
   },
+  methods: {
+    // 表单验证
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          alert("submit!");
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    // 重置
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    }
+  }
 };
 </script>
 
@@ -46,13 +86,13 @@ body {
   background-color: #fff;
   border-radius: 8px;
   padding: 50px 30px;
-  box-sizing: border-box;  //向里扩展
-  .title{
-      padding: 0;
-      margin: 0;
+  box-sizing: border-box; //向里扩展
+  .title {
+    padding: 0;
+    margin: 0;
   }
-  .my_btn{
-      width: 100%;
+  .my_btn {
+    width: 100%;
   }
 }
 </style>

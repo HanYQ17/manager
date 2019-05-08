@@ -10,6 +10,6 @@ const request = {
 // 暴露一个包含install方法的对象,让外部可以Vue.use
 export default {
     install(Vue){
-        Vue.prototype.$request = request
+        Vue.prototype.$request = request   //添加到Vue的原型上
     }
 }
