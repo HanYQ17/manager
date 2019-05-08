@@ -4,6 +4,24 @@ import axios from 'axios'  //导入axios
 axios.defaults.baseURL='http://localhost:8888/api/private/v1/'
 
 
+// axios拦截器
+// 请求拦截器   请求发送前执行
+axios.interceptors.request.use(function (config) {  
+    config.headers.Authorization = sessionStorage.getItem('token')
+    return config;
+  }, function (error) {
+    return Promise.reject(error);
+  });
+// 响应拦截器  响应回来之后执行
+axios.interceptors.response.use(function (response) {  
+    return response;
+  }, function (error) {
+    return Promise.reject(error);
+  });
+
+
+
+
 //抽取网络请求的对象
 const request = {  
     // 封装  方便后期维护
@@ -15,7 +33,7 @@ const request = {
         return axios.get('users',{
             params,
             // params:params,
-            headers:{Authorization:window.sessionStorage.getItem('token')}  //请求头,带token数据
+            // headers:{Authorization:window.sessionStorage.getItem('token')}  //请求头,带token数据    使用了拦截器就不需要了
         })
     }
 }
