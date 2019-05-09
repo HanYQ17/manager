@@ -10,7 +10,12 @@
     <!-- 栅格 输入框 按钮 -->
     <el-row :gutter="10">
       <el-col :span="6">
-        <el-input placeholder="请输入内容" class="input-with-select" v-model="userData.query" @keyup.native.enter="getUsers">
+        <el-input
+          placeholder="请输入内容"
+          class="input-with-select"
+          v-model="userData.query"
+          @keyup.native.enter="getUsers"
+        >
           <el-button slot="append" icon="el-icon-search" @click="getUsers"></el-button>
         </el-input>
       </el-col>
@@ -88,6 +93,25 @@
         <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 编辑框 -->
+    <el-dialog title="编辑用户" :visible.sync="editVisible">
+      <el-form :model="editForm" :rules="addRules" ref="editForm">
+        <el-form-item label="用户名" label-width="120px" prop="username">
+          <el-input v-model="editForm.username" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="120px">
+          <el-input v-model="editForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="120px">
+          <el-input v-model="editForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('editForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -104,7 +128,7 @@ export default {
         pagenum: 1, //页码
         pagesize: 5 //页容量
       },
-      total:0,  //总数
+      total: 0, //总数
       addVisible: false, // 是否显示新增框
       // 新增数据
       addForm: {
@@ -123,11 +147,17 @@ export default {
           { required: true, message: "密码也不能为空", trigger: "blur" },
           { min: 1, max: 12, message: "长度在 1 到 12 个字符", trigger: "blur" }
         ],
-        email:[],
-        mobile:[]
+        email: [],
+        mobile: []
       },
-      
-    }
+      editVisible: false, // 是否显示修改框
+      editForm: {
+        // 编辑的数据
+        username: "",
+        email: "",
+        mobile: ""
+      }
+    };
   },
   methods: {
     // 获取用户列表数据
@@ -135,7 +165,7 @@ export default {
       this.$request.getUsers(this.userData).then(res => {
         // console.log(res);
         this.tableData = res.data.data.users;
-        this.total = res.data.data.total
+        this.total = res.data.data.total;
       });
     },
     // 修改用户状态  使用change 值改变事件
@@ -148,7 +178,12 @@ export default {
     },
     // 编辑
     handleEdit(index, row) {
-      console.log(index, row);
+      // console.log(index, row);
+      this.$request.getUserById(row.id).then(res => {
+        // console.log(res);
+        this.editForm = res.data.data;
+        this.editVisible = true;
+      });
     },
     // 删除
     handleDelete(index, row) {
@@ -183,14 +218,25 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // 添加用户
-          this.$request.addUser(this.addForm).then(res => {
-            console.log(res);
-            this.addVisible = false; //关闭弹窗
-            this.$message.success("添加成功"); //提示
-            this.getUsers(); //重新渲染
-            this.$refs[formName].resetFields(); //重置表单
-          });
+          if (formName == "editForm") {
+            // 编辑用户
+            this.$request.updataUser(this.editForm).then(res=>{
+              // console.log(res);
+              if(res.data.meta.status==200){
+                this.editVisible = false  //关闭弹窗
+                this.getUsers()  //重新渲染
+              }
+            })
+          } else {
+            // 添加用户
+            this.$request.addUser(this.addForm).then(res => {
+              console.log(res);
+              this.addVisible = false; //关闭弹窗
+              this.$message.success("添加成功"); //提示
+              this.getUsers(); //重新渲染
+              this.$refs[formName].resetFields(); //重置表单
+            });
+          }
         } else {
           this.$message.error("格式不对");
           return false;
@@ -198,17 +244,18 @@ export default {
       });
     },
     // 页容量改变
-    handleSizeChange(size){
+    handleSizeChange(size) {
       // console.log(size);
       this.userData.pagesize = size;
-      this.getUsers()
+      this.getUsers();
     },
     // 页码改变
-    handleCurrentChange(current){
+    handleCurrentChange(current) {
       // console.log(current);
-      this.userData.pagenum = current
-      this.getUsers()
+      this.userData.pagenum = current;
+      this.getUsers();
     }
+    // 根据ID查询用户信息
   },
   created() {
     this.getUsers();
