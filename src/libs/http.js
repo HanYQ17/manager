@@ -92,7 +92,12 @@ const request = {
             roleName:params.roleName,
             roleDesc:params.roleDesc
         })
-    }
+    },
+    // 获取所有权限列表
+    getListRights(){
+        return axios.get(`rights/list`)
+    },
+    
 }
 
 // 暴露一个包含install方法的对象,让外部可以Vue.use
