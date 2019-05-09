@@ -14,6 +14,7 @@ import params from './components/params.vue' //分类参数
 import categories from './components/categories.vue'  //商品分类
 import orders from './components/orders.vue'  //订单列表
 import reports from './components/reports.vue'  //数据报表
+import error from './components/error.vue'  //404页面
 
 // 路由规则
 const routes = [
@@ -29,6 +30,8 @@ const routes = [
         {path:'categories',component:categories},  
         {path:'orders',component:orders},  
         {path:'reports',component:reports},  
+        {path:'error',component:error},  
+        
     ]},
 
 ]
@@ -37,6 +40,20 @@ const routes = [
 const router = new VueRouter({
     routes
 })
+
+// 注册导航守卫
+router.beforeEach((to, from, next) => {
+    /*  to 去哪的路由
+        from 要离开的路由
+        next()   //必须执行,不执行不会往后走了
+    */
+    if(to.matched.length==0){  //代表没有该页面
+        next('error')   //去到error错误页
+    }else{
+        next();
+    }
+  })
+
 
 //暴露出去
 export default router  

@@ -46,15 +46,6 @@
       </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
-    <el-pagination
-      :current-page="1"
-      :page-sizes="[2, 4, 6, 8]"
-      :page-size="6"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
-    ></el-pagination>
-
     <!-- 添加角色 -->
     <el-dialog title="添加角色" :visible.sync="addVisible">
       <el-form :model="addForm" :rules="addRules" ref="addForm">
