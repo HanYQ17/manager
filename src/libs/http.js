@@ -1,4 +1,6 @@
 import axios from 'axios'  //导入axios
+import Vue from 'vue'  //导入Vue
+import router from '../router'  //导入路由对象,才能使用编程式导航(跳转)
 
 // 设置基地址
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
@@ -14,6 +16,14 @@ axios.interceptors.request.use(function (config) {
 });
 // 响应拦截器  响应回来之后执行
 axios.interceptors.response.use(function (response) {
+    if(response.data.meta.status==200){
+        Vue.prototype.$message.success(response.data.meta.msg)
+    }else if(response.data.meta.status==400){
+        router.push('login')  //跳转
+        new Vue().$message.error('伪造的token')  //提示
+        sessionStorage.removeItem('token')  //清除伪造的token 
+        response.data.data = []   //如果token无效,data.data是null,浏览器会报错,需要改成数组才不会报错
+    }
     return response;
 }, function (error) {
     return Promise.reject(error);
@@ -56,16 +66,16 @@ const request = {
         return axios.put(`users/${params.id}`, { email: params.email, mobile: params.mobile })
     },
     // 获取角色列表
-    getRoles(){
+    getRoles() {
         return axios.get(`roles`)
     },
     // 修改分配用户角色
-    updateUserRole(params){
-        return axios.put(`users/${params.id}/role`,{rid:params.rid})
+    updateUserRole(params) {
+        return axios.put(`users/${params.id}/role`, { rid: params.rid })
     },
     // 添加角色
-    addRoles(params){
-        return axios.post(`roles`,params)
+    addRoles(params) {
+        return axios.post(`roles`, params)
     }
 }
 
