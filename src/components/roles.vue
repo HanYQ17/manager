@@ -15,10 +15,35 @@
     </el-row>
 
     <!-- 表格 -->
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="date" label="日期" width="180"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-      <el-table-column prop="address" label="地址"></el-table-column>
+    <el-table :data="tableData" style="width: 100%" border>
+      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column prop="roleName" label="角色名称" width="180"></el-table-column>
+      <el-table-column prop="roleDesc" label="角色描述" width="180"></el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            plain
+            size="mini"
+            @click="handleEdit(scope.$index, scope.row)"
+          ></el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            plain
+            size="mini"
+            @click="handleDelete(scope.$index, scope.row)"
+          ></el-button>
+          <el-button
+            type="success"
+            icon="el-icon-check"
+            plain
+            size="mini"
+            @click="handleRole(scope.row)"
+          ></el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->
@@ -37,38 +62,40 @@ export default {
   name: "roles",
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ]
+      tableData: [],  //角色数据
     };
+  },
+  created() {
+    this.$request.getRoles().then(res => {
+      // console.log(res);
+      // 报错'rowKey is required',不能有children,所以要改掉children
+      let data = res.data.data
+      data.forEach(v => {
+        v._children = v.children  //把值存在另一个名字上
+        delete v.children  //然后删除children
+      });
+      this.tableData = data
+    });
+  },
+  methods: {
+    handleEdit(){
+
+    },
+    handleDelete(){
+
+    },
+    handleRole(){
+
+    }
   }
 };
 </script>
 
 <style lang="scss">
-.my_breadcrumb{
-    height: 45px;
-    line-height: 45px;
-    background-color: #d3dce6;
-    padding-left: 10px;
+.my_breadcrumb {
+  height: 45px;
+  line-height: 45px;
+  background-color: #d3dce6;
+  padding-left: 10px;
 }
 </style>
