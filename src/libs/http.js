@@ -17,7 +17,7 @@ axios.interceptors.request.use(function (config) {
 // 响应拦截器  响应回来之后执行
 axios.interceptors.response.use(function (response) {
     if(response.data.meta.status==200){
-        Vue.prototype.$message.success(response.data.meta.msg)
+        // Vue.prototype.$message.success(response.data.meta.msg)
     }else if(response.data.meta.status==400){
         router.push('login')  //跳转
         new Vue().$message.error('伪造的token')  //提示
@@ -28,6 +28,7 @@ axios.interceptors.response.use(function (response) {
 }, function (error) {
     return Promise.reject(error);
 });
+
 
 
 
@@ -76,6 +77,10 @@ const request = {
     // 添加角色
     addRoles(params) {
         return axios.post(`roles`, params)
+    },
+    // 删除角色
+    deleteRoles(id){
+        return axios.delete(`roles/${id}`)
     }
 }
 

@@ -33,7 +33,7 @@
             icon="el-icon-delete"
             plain
             size="mini"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.row)"
           ></el-button>
           <el-button
             type="success"
@@ -80,7 +80,7 @@ export default {
     return {
       tableData: [], //角色数据
       addVisible: false, //是否显示弹窗
-        // 新增数据验证
+      // 新增数据验证
       addRules: {
         roleName: [
           { required: true, message: "用户名不能为空", trigger: "blur" },
@@ -93,13 +93,13 @@ export default {
       },
       // 新增数据
       addForm: {
-        roleName: "", 
-        roleDesc: "", 
-      },
+        roleName: "",
+        roleDesc: ""
+      }
     };
   },
   created() {
-    this.getRoles()
+    this.getRoles();
   },
   methods: {
     // 获取数据
@@ -115,6 +115,7 @@ export default {
         this.tableData = data;
       });
     },
+    // 提交数据
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -133,7 +134,29 @@ export default {
       });
     },
     handleEdit() {},
-    handleDelete() {},
+    // 删除
+    handleDelete(row) {
+      this.$confirm("此操作将永久删除该角色, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$request.deleteRoles(row.id).then(res => {
+            // console.log(res)
+            if (res.data.meta.status == 200) {
+              this.$message({type: "success",message: "删除成功!"});
+              this.getRoles(); //重新渲染
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
     handleRole() {}
   }
 };
