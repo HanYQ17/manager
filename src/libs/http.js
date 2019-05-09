@@ -54,6 +54,14 @@ const request = {
     // 编辑用户
     updataUser(params) {
         return axios.put(`users/${params.id}`, { email: params.email, mobile: params.mobile })
+    },
+    // 获取角色列表
+    getRoles(){
+        return axios.get(`roles`)
+    },
+    // 修改分配用户角色
+    updateUserRole(params){
+        return axios.put(`users/${params.id}/role`,{rid:params.rid})
     }
 }
 

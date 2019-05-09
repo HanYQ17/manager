@@ -56,7 +56,13 @@
             size="mini"
             @click="handleDelete(scope.$index, scope.row)"
           ></el-button>
-          <el-button type="success" icon="el-icon-check" plain size="mini"></el-button>
+          <el-button
+            type="success"
+            icon="el-icon-check"
+            plain
+            size="mini"
+            @click="handleRole(scope.row)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -112,6 +118,30 @@
         <el-button type="primary" @click="submitForm('editForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 分配角色框 -->
+    <el-dialog title="分配角色" :visible.sync="roleVisible">
+      <el-form :model="roleForm" :rules="addRules" ref="roleForm">
+        <el-form-item label="当前用户" label-width="120px" prop="username">
+          <el-input v-model="roleForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="请选择角色" label-width="120px">
+          <el-select v-model="roleValue" placeholder="请选择">
+            <el-option label="未分配角色" :value="-1"></el-option>
+            <el-option
+              v-for="item in role"
+              :key="item.value"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="roleVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('roleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -151,12 +181,16 @@ export default {
         mobile: []
       },
       editVisible: false, // 是否显示修改框
+      // 编辑的数据
       editForm: {
-        // 编辑的数据
         username: "",
         email: "",
         mobile: ""
-      }
+      },
+      roleVisible: false, //是否显示分配角色框
+      roleForm: {}, // 分配角色的数据
+      role: [], //所有角色
+      roleValue:'',  //select的双向数据绑定
     };
   },
   methods: {
@@ -214,20 +248,44 @@ export default {
       // this.$request.deleteUserById(row.id)
       // this.getUsers();
     },
+    // 修改用户角色
+    handleRole(row) {
+      this.$request.getUserById(row.id).then(res => {
+        // console.log(res);
+        this.roleForm = res.data.data; //保存数据
+        console.log(this.roleForm);
+        this.$request.getRoles().then(res => {
+          //获取角色数据
+          // console.log(res);
+          this.role = res.data.data;
+          this.roleVisible = true; //显示弹框
+          this.roleValue = this.roleForm.rid  //赋值
+        });
+      });
+    },
     // 新增数据验证
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (formName == "editForm") {
             // 编辑用户
-            this.$request.updataUser(this.editForm).then(res=>{
+            this.$request.updataUser(this.editForm).then(res => {
               // console.log(res);
+              if (res.data.meta.status == 200) {
+                this.editVisible = false; //关闭弹窗
+                this.getUsers(); //重新渲染
+              }
+            });
+          }else if(formName=="roleForm") {
+            // 修改角色分配
+            this.$request.updateUserRole({id:this.roleForm.id,rid:this.roleValue}).then(res=>{
               if(res.data.meta.status==200){
-                this.editVisible = false  //关闭弹窗
+                this.roleVisible = false  //关闭弹窗
                 this.getUsers()  //重新渲染
               }
             })
-          } else {
+          }
+          else {
             // 添加用户
             this.$request.addUser(this.addForm).then(res => {
               console.log(res);
@@ -255,7 +313,7 @@ export default {
       this.userData.pagenum = current;
       this.getUsers();
     }
-    // 根据ID查询用户信息
+  
   },
   created() {
     this.getUsers();
