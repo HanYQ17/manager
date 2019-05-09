@@ -62,6 +62,10 @@ const request = {
     // 修改分配用户角色
     updateUserRole(params){
         return axios.put(`users/${params.id}/role`,{rid:params.rid})
+    },
+    // 添加角色
+    addRoles(params){
+        return axios.post(`roles`,params)
     }
 }
 
