@@ -26,7 +26,7 @@
             icon="el-icon-edit"
             plain
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handleEdit(scope.row)"
           ></el-button>
           <el-button
             type="danger"
@@ -70,6 +70,22 @@
         <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 编辑角色 -->
+    <el-dialog title="编辑角色" :visible.sync="editVisible">
+      <el-form :model="editRoles" :rules="addRules" ref="editRoles">
+        <el-form-item label="角色名称" label-width="120px">
+          <el-input v-model="editRoles.roleName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" label-width="120px">
+          <el-input v-model="editRoles.roleDesc" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('editRoles')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -79,12 +95,12 @@ export default {
   data() {
     return {
       tableData: [], //角色数据
-      addVisible: false, //是否显示弹窗
+      addVisible: false, //是否显示添加弹窗
       // 新增数据验证
       addRules: {
         roleName: [
           { required: true, message: "用户名不能为空", trigger: "blur" },
-          { min: 1, max: 5, message: "长度在 1 到 5 个字符", trigger: "blur" }
+          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
         ],
         roleDesc: [
           { required: true, message: "密码也不能为空", trigger: "blur" },
@@ -93,6 +109,12 @@ export default {
       },
       // 新增数据
       addForm: {
+        roleName: "",
+        roleDesc: ""
+      },
+      editVisible: false, //是否显示编辑的弹窗
+      // 编辑数据
+      editRoles: {
         roleName: "",
         roleDesc: ""
       }
@@ -119,21 +141,40 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // 添加角色
-          this.$request.addRoles(this.addForm).then(res => {
-            console.log(res);
-            this.addVisible = false; //关闭弹窗
-            this.$message.success("添加成功"); //提示
-            this.getRoles(); //重新渲染
-            this.$refs[formName].resetFields(); //重置表单
-          });
+          if (formName == "addForm") {
+            // 添加角色
+            this.$request.addRoles(this.addForm).then(res => {
+              // console.log(res);
+              this.addVisible = false; //关闭弹窗
+              this.$message.success("添加成功"); //提示
+              this.getRoles(); //重新渲染
+              this.$refs[formName].resetFields(); //重置表单
+            });
+          } else if (formName == "editRoles") {
+            this.$request.editRoles(this.editRoles).then(res => {
+              // console.log(res);
+              if (res.data.meta.status == 200) {
+                this.editVisible = false;
+                this.getRoles();
+                this.$message.success(res.data.meta.msg);
+              }
+            });
+          }
         } else {
           this.$message.error("格式不对");
           return false;
         }
       });
     },
-    handleEdit() {},
+    // 根据id获取数据
+    handleEdit(row) {
+      this.editVisible = true;
+      this.$request.getRoleById(row.id).then(res => {
+        // console.log(res);
+        this.editRoles = res.data.data;
+        this.editRoles.id = res.data.data.roleId;
+      });
+    },
     // 删除
     handleDelete(row) {
       this.$confirm("此操作将永久删除该角色, 是否继续?", "提示", {
@@ -145,7 +186,7 @@ export default {
           this.$request.deleteRoles(row.id).then(res => {
             // console.log(res)
             if (res.data.meta.status == 200) {
-              this.$message({type: "success",message: "删除成功!"});
+              this.$message({ type: "success", message: "删除成功!" });
               this.getRoles(); //重新渲染
             }
           });

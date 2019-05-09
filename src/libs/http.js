@@ -18,7 +18,7 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
     if(response.data.meta.status==200){
         // Vue.prototype.$message.success(response.data.meta.msg)
-    }else if(response.data.meta.status==400){
+    }else if(response.data.meta.status==400&&response.data.meta.msg=='无效token'){
         router.push('login')  //跳转
         new Vue().$message.error('伪造的token')  //提示
         sessionStorage.removeItem('token')  //清除伪造的token 
@@ -81,6 +81,17 @@ const request = {
     // 删除角色
     deleteRoles(id){
         return axios.delete(`roles/${id}`)
+    },
+    // 根据ID查询角色
+    getRoleById(id){
+        return axios.get(`roles/${id}`)
+    },
+    // 编辑角色
+    editRoles(params){
+        return axios.put(`roles/${params.id}`,{
+            roleName:params.roleName,
+            roleDesc:params.roleDesc
+        })
     }
 }
 
