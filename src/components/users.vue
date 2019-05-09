@@ -10,8 +10,8 @@
     <!-- 栅格 输入框 按钮 -->
     <el-row :gutter="10">
       <el-col :span="6">
-        <el-input placeholder="请输入内容" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input placeholder="请输入内容" class="input-with-select" v-model="userData.query" @keyup.native.enter="getUsers">
+          <el-button slot="append" icon="el-icon-search" @click="getUsers"></el-button>
         </el-input>
       </el-col>
       <el-col :span="12">
@@ -58,11 +58,13 @@
 
     <!-- 分页 -->
     <el-pagination
-      :current-page="1"
-      :page-sizes="[2, 4, 6, 8]"
-      :page-size="6"
+      :current-page="userData.pagenum"
+      :page-sizes="[5, 10, 15, 20]"
+      :page-size="userData.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
     ></el-pagination>
 
     <!-- 添加用户框 -->
@@ -100,10 +102,10 @@ export default {
       userData: {
         query: "", //查询的参数
         pagenum: 1, //页码
-        pagesize: 10 //页容量
+        pagesize: 5 //页容量
       },
-      // 是否显示新增框
-      addVisible: false, //默认是false
+      total:0,  //总数
+      addVisible: false, // 是否显示新增框
       // 新增数据
       addForm: {
         username: "", //用户名
@@ -123,8 +125,9 @@ export default {
         ],
         email:[],
         mobile:[]
-      }
-    };
+      },
+      
+    }
   },
   methods: {
     // 获取用户列表数据
@@ -132,6 +135,7 @@ export default {
       this.$request.getUsers(this.userData).then(res => {
         // console.log(res);
         this.tableData = res.data.data.users;
+        this.total = res.data.data.total
       });
     },
     // 修改用户状态  使用change 值改变事件
@@ -192,6 +196,18 @@ export default {
           return false;
         }
       });
+    },
+    // 页容量改变
+    handleSizeChange(size){
+      // console.log(size);
+      this.userData.pagesize = size;
+      this.getUsers()
+    },
+    // 页码改变
+    handleCurrentChange(current){
+      // console.log(current);
+      this.userData.pagenum = current
+      this.getUsers()
     }
   },
   created() {
