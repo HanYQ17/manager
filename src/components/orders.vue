@@ -25,12 +25,11 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            plain
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+          <el-button type="primary" 
+          icon="el-icon-edit" 
+          plain
+          size="mini" 
+          @click="editVisible=true"
           ></el-button>
         </template>
       </el-table-column>
@@ -44,11 +43,32 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="400"
     ></el-pagination>
+
+    <!-- 编辑框 -->
+    <el-dialog title="修改订单地址" :visible.sync="editVisible">
+      <el-form :model="editForm" :rules="addRules" ref="editForm">
+        <el-form-item label="省市区/县" label-width="120px">
+          <el-cascader 
+          expand-trigger="hover" 
+          :options="options" 
+          v-model="selectedOptions2"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" label-width="120px">
+          <el-input v-model="editForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editVisible=true">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import moment from "moment"; //导入moment,需先安装 npm install moment --save
+import options from "../assets/city_data2017_element.js"; // 导入省市区数据
 export default {
   name: "orders",
   data() {
@@ -79,7 +99,12 @@ export default {
       orderData: {
         pagenum: 1,
         pagesize: 10
-      }
+      },
+      editVisible: false, //是否显示编辑框
+      options, //省市联动数据
+      selectedOptions2: [], // 选中的数据
+
+      editForm: {} //编辑数据
     };
   },
   created() {
@@ -91,6 +116,16 @@ export default {
       this.$request.getOrderList(this.orderData).then(res => {
         // console.log(res);
         this.tableData = res.data.data.goods;
+      });
+    },
+    // 提交数据
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+        } else {
+          this.$message.error("错误");
+          return false;
+        }
       });
     }
   },
