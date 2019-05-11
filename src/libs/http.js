@@ -100,6 +100,11 @@ const request = {
     // 数据统计  获取数据报表
     getReports(){
         return axios.get(`reports/type/1`)
+    },
+    // 获取订单列表
+    getOrderList(params){
+        return axios.get(`orders`,{params})  //要有个对象
+        // return axios.get(`orders`,params)  //这个做法是post请求,get请求会直接拼接在url后面
     }
     
 }
