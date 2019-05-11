@@ -117,6 +117,10 @@ const request = {
             rids:params.rids  //id,id,id....格式
         })
     },
+    // 获取菜单
+    getMenus(){
+        return axios.get(`menus`)
+    }
     
 }
 
