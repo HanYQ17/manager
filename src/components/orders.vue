@@ -25,12 +25,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" 
-          icon="el-icon-edit" 
-          plain
-          size="mini" 
-          @click="editVisible=true"
-          ></el-button>
+          <el-button type="primary" icon="el-icon-edit" plain size="mini" @click="editVisible=true"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -46,16 +41,15 @@
 
     <!-- 编辑框 -->
     <el-dialog title="修改订单地址" :visible.sync="editVisible">
-      <el-form :model="editForm" :rules="addRules" ref="editForm">
+      <el-form :model="editForm" ref="editForm">
         <el-form-item label="省市区/县" label-width="120px">
-          <el-cascader 
-          expand-trigger="hover" 
-          :options="options" 
-          v-model="selectedOptions2"
-          ></el-cascader>
+          <el-cascader expand-trigger="hover" :options="options" v-model="selectedOptions2"></el-cascader>
         </el-form-item>
         <el-form-item label="详细地址" label-width="120px">
+          <!-- 方法一 -->
           <el-input v-model="editForm.password" autocomplete="off"></el-input>
+          <!-- 方法二 -->
+          <v-distpicker @selected="selected"></v-distpicker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -69,6 +63,10 @@
 <script>
 import moment from "moment"; //导入moment,需先安装 npm install moment --save
 import options from "../assets/city_data2017_element.js"; // 导入省市区数据
+
+import VDistpicker from "v-distpicker"; //导入省市联动组件 需安装 npm install v-distpicker --save
+
+
 export default {
   name: "orders",
   data() {
@@ -118,6 +116,10 @@ export default {
         this.tableData = res.data.data.goods;
       });
     },
+    // 省市联动数据绑定
+     selected(ssq){
+      console.log(ssq);
+    },
     // 提交数据
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -134,6 +136,10 @@ export default {
     formatTime(value) {
       return moment(value).format("YYYY-MM-DD HH:mm:ss"); //年月日 时分秒
     }
+  },
+  // 本地组件
+  components: {
+    VDistpicker   //VDistpicker:VDistpicker的简写
   }
 };
 </script>
