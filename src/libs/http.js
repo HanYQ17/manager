@@ -97,6 +97,10 @@ const request = {
     getListRights(){
         return axios.get(`rights/list`)
     },
+    // 数据统计  获取数据报表
+    getReports(){
+        return axios.get(`reports/type/1`)
+    }
     
 }
 
