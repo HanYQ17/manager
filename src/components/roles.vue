@@ -104,7 +104,7 @@
       </div>
     </el-dialog>
 
-    <!-- 编辑角色 -->
+    <!-- 编辑角色框 -->
     <el-dialog title="编辑角色" :visible.sync="editVisible">
       <el-form :model="editRoles" :rules="addRules" ref="editRoles">
         <el-form-item label="角色名称" label-width="120px">
@@ -117,6 +117,24 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="editVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitForm('editRoles')">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 树形结构框 -->
+    <el-dialog title="权限分配" :visible.sync="rightsVisible">
+      <!-- 树形菜单 -->
+      <el-tree
+        :data="rightsData"
+        :props="rightsProps"
+        :default-checked-keys="defaultCheckedKeys"
+        node-key="id"
+        show-checkbox
+        default-expand-all
+        ref="tree"
+      ></el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="rightsVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRoleRights">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -150,7 +168,15 @@ export default {
       editRoles: {
         roleName: "",
         roleDesc: ""
-      }
+      },
+      rightsVisible: false, //是否显示树形结构框
+      rightsForm: {}, //权限的数据
+      rightsData: [], //所有的权限
+      rightsProps: {
+        children: "children",
+        label: "authName"
+      },
+      defaultCheckedKeys: [] //默认选中的权限
     };
   },
   created() {
@@ -232,18 +258,68 @@ export default {
         });
     },
     // 删除指定权限
-    delRight(row,id){
-      this.$request.deleteRight({
-        roleId:row.id,
-        rightId:id
-      }).then(res=>{
-        // console.log(res);
-        if(res.data.meta.status==200){
-          row._children = res.data.data
-        }
-      })
+    delRight(row, id) {
+      this.$request
+        .deleteRight({
+          roleId: row.id,
+          rightId: id
+        })
+        .then(res => {
+          // console.log(res);
+          if (res.data.meta.status == 200) {
+            row._children = res.data.data;
+          }
+        });
     },
-    handleRole() {}
+    // 树形结构框
+    handleRole(row) {
+      this.rightsVisible = true; //显示弹框
+      this.rightsForm = row  //保存权限数据方便后续使用
+      this.$request.getRightsTree().then(res => {
+        // console.log(res);
+        this.rightsData = res.data.data; //保存数据
+        let checkedIds = []; //设置选中的值
+        // row._children.forEach(v => {  //一级
+        //   checkedIds.push(v.id);
+        //   v.children.forEach(v => {  //二级
+        //     checkedIds.push(v.id);
+        //     v.children.forEach(v => {  //三级
+        //       checkedIds.push(v.id);
+        //     });
+        //   });
+        // });
+        // this.defaultCheckedKeys = checkedIds;  //赋值给默认选中的权限
+        // 使用递归方法 代替上面的写法
+        function getCheckedKeys(item) {
+          item._children.forEach(v => {
+            checkedIds.push(v.id); //添加到checkedIds数组里
+            if (v.children) {
+              //如果有这个值
+              v._children = v.children; //改名
+              getCheckedKeys(v); //自己调用自己,递归
+            }
+          });
+        }
+        getCheckedKeys(row); //调用函数
+        this.defaultCheckedKeys = checkedIds; //赋值给默认选中的权限
+      });
+    },
+    // 为角色授权
+    setRoleRights() {
+      const arr = this.$refs.tree.getCheckedKeys(); //选中的选项,返回的是数据
+      const rids = arr.join(","); //将数组拼接成字符串  因为: rids的格式是id,id,id,id...
+      console.log(this.rightsForm.id);
+      this.$request
+        .setRoleRights({ roleId: this.rightsForm.id, rids })
+        .then(res => {
+          // console.log(res);
+          if(res.data.meta.status==200){
+            this.rightsVisible = false; //关闭弹窗
+            this.$message.success(res.data.meta.msg)
+            this.getRoles()  //重新渲染
+          }
+        });
+    }
   }
 };
 </script>
