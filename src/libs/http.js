@@ -30,9 +30,6 @@ axios.interceptors.response.use(function (response) {
 });
 
 
-
-
-
 //抽取网络请求的对象
 const request = {
     // 封装  方便后期维护
@@ -105,6 +102,10 @@ const request = {
     getOrderList(params){
         return axios.get(`orders`,{params})  //要有个对象
         // return axios.get(`orders`,params)  //这个做法是post请求,get请求会直接拼接在url后面
+    },
+    // 删除角色指定权限
+    deleteRight(params){
+        return axios.delete(`roles/${params.roleId}/rights/${params.rightId}`)
     }
     
 }

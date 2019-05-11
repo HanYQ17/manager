@@ -16,6 +16,48 @@
 
     <!-- 表格 -->
     <el-table :data="tableData" style="width: 100%" border>
+      <!-- 展开内容 -->
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-row v-for="(levek1,index) in props.row._children" :key="index">
+            <el-col :span="6">
+              <!-- 第一级tag -->
+              <el-tag
+                type="primary"
+                :key="levek1.id"
+                closable
+                @close="delRight(props.row,levek1.id)"
+              >{{levek1.authName}}</el-tag>
+              <span class="el-icon-arrow-right"></span>
+            </el-col>
+            <el-col :span="18">
+              <!-- 第二级tag -->
+              <el-row v-for="(levek2,i) in levek1.children" :key="i">
+                <el-col :span="6">
+                  <el-tag
+                    type="success"
+                    :key="levek2.id"
+                    closable
+                    @close="delRight(props.row,levek2.id)"
+                  >{{levek2.authName}}</el-tag>
+                  <span class="el-icon-arrow-right"></span>
+                </el-col>
+                <el-col :span="18">
+                  <!-- 第三级 -->
+                  <el-tag
+                    type="warning"
+                    v-for="levek3 in levek2.children"
+                    :key="levek3.id"
+                    closable
+                    class="my_tag"
+                    @close="delRight(props.row,levek3.id)"
+                  >{{levek3.authName}}</el-tag>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="roleName" label="角色名称" width="180"></el-table-column>
       <el-table-column prop="roleDesc" label="角色描述" width="180"></el-table-column>
@@ -189,6 +231,18 @@ export default {
           });
         });
     },
+    // 删除指定权限
+    delRight(row,id){
+      this.$request.deleteRight({
+        roleId:row.id,
+        rightId:id
+      }).then(res=>{
+        // console.log(res);
+        if(res.data.meta.status==200){
+          row._children = res.data.data
+        }
+      })
+    },
     handleRole() {}
   }
 };
@@ -200,5 +254,8 @@ export default {
   line-height: 45px;
   background-color: #d3dce6;
   padding-left: 10px;
+}
+.my_tag {
+  margin: 5px;
 }
 </style>
