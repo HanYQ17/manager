@@ -292,11 +292,13 @@ export default {
         // 使用递归方法 代替上面的写法
         function getCheckedKeys(item) {
           item._children.forEach(v => {
-            checkedIds.push(v.id); //添加到checkedIds数组里
+            // checkedIds.push(v.id); //添加到checkedIds数组里
             if (v.children) {
               //如果有这个值
               v._children = v.children; //改名
               getCheckedKeys(v); //自己调用自己,递归
+            }else{
+              checkedIds.push(v.id)  //没有后代了,添加到数组中
             }
           });
         }
@@ -306,9 +308,11 @@ export default {
     },
     // 为角色授权
     setRoleRights() {
-      const arr = this.$refs.tree.getCheckedKeys(); //选中的选项,返回的是数据
+      let arr = this.$refs.tree.getCheckedKeys(); //选中的选项,返回的是数据
+      const checkhalf = this.$refs.tree.getHalfCheckedKeys() //半选中节点
+      arr = arr.concat(checkhalf)
       const rids = arr.join(","); //将数组拼接成字符串  因为: rids的格式是id,id,id,id...
-      console.log(this.rightsForm.id);
+      // console.log(rids);
       this.$request
         .setRoleRights({ roleId: this.rightsForm.id, rids })
         .then(res => {
