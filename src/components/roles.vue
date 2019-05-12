@@ -274,7 +274,7 @@ export default {
     // 树形结构框
     handleRole(row) {
       this.rightsVisible = true; //显示弹框
-      this.rightsForm = row  //保存权限数据方便后续使用
+      this.rightsForm = row; //保存权限数据方便后续使用
       this.$request.getRightsTree().then(res => {
         // console.log(res);
         this.rightsData = res.data.data; //保存数据
@@ -297,8 +297,8 @@ export default {
               //如果有这个值
               v._children = v.children; //改名
               getCheckedKeys(v); //自己调用自己,递归
-            }else{
-              checkedIds.push(v.id)  //没有后代了,添加到数组中
+            } else {
+              checkedIds.push(v.id); //没有后代了,添加到数组中
             }
           });
         }
@@ -309,19 +309,23 @@ export default {
     // 为角色授权
     setRoleRights() {
       let arr = this.$refs.tree.getCheckedKeys(); //选中的选项,返回的是数据
-      const checkhalf = this.$refs.tree.getHalfCheckedKeys() //半选中节点
-      arr = arr.concat(checkhalf)
+      const checkhalf = this.$refs.tree.getHalfCheckedKeys(); //半选中节点
+      arr = arr.concat(checkhalf);
       const rids = arr.join(","); //将数组拼接成字符串  因为: rids的格式是id,id,id,id...
       // console.log(rids);
       this.$request
         .setRoleRights({ roleId: this.rightsForm.id, rids })
         .then(res => {
           // console.log(res);
-          if(res.data.meta.status==200){
+          if (res.data.meta.status == 200) {
             this.rightsVisible = false; //关闭弹窗
-            this.$message.success(res.data.meta.msg)
-            this.getRoles()  //重新渲染
+            this.$message.success(res.data.meta.msg);
+            this.getRoles(); //重新渲染
           }
+          // 菜单数据更新  在index.vue复制
+          this.$request.getMenus().then(res => {
+            this.$store.commit("changeMenuList", res.data.data);
+          });
         });
     }
   }

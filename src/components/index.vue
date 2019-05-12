@@ -19,7 +19,7 @@
         <el-aside width="200px" class="aside">
           <el-menu router default-active="2" class="el-menu-vertical-demo">
             <!-- 用户管理 -->
-            <el-submenu v-for="(item, index) in menuList" :key="index" :index="item.order+''">
+            <el-submenu v-for="(item, index) in $store.state.menuList" :key="index" :index="item.order+''">
               <template slot="title">
                 <i class="el-icon-location"></i>
                 <span>{{item.authName}}</span>
@@ -69,7 +69,8 @@ export default {
     getMenus() {
       this.$request.getMenus().then(res => {
         // console.log(res);
-        this.menuList = res.data.data
+        // this.menuList = res.data.data
+        this.$store.commit('changeMenuList',res.data.data)
       });
     }
   }
