@@ -121,8 +121,10 @@ const request = {
     getMenus(){
         return axios.get(`menus`)
     },
-    
-    
+    // 商品数据列表
+    getCategories(){
+        return axios.get(`categories?type=3`)
+    },
 }
 
 // 暴露一个包含install方法的对象,让外部可以Vue.use
