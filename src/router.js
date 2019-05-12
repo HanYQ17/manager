@@ -15,6 +15,9 @@ import categories from './components/categories.vue'  //商品分类
 import orders from './components/orders.vue'  //订单列表
 import reports from './components/reports.vue'  //数据报表
 import error from './components/error.vue'  //404页面
+// 再嵌套
+import goodsAdd from './components/goodsAdd.vue' 
+import goodsList from './components/goodsList.vue'
 
 // 路由规则
 const routes = [
@@ -25,7 +28,11 @@ const routes = [
         {path:'users',component:users},  //嵌套路由不需要写 '/'
         {path:'roles',component:roles}, 
         {path:'rights',component:rights},  
-        {path:'goods',component:goods},  
+        {path:'goods',component:goods,children:[
+            // {path:'',redirect:'goodsList'},  //重定向
+            {path:'',component:goodsList}, 
+            {path:'goodsAdd',component:goodsAdd}, 
+        ]},  
         {path:'params',component:params},  
         {path:'categories',component:categories},  
         {path:'orders',component:orders},  
@@ -48,8 +55,12 @@ router.beforeEach((to, from, next) => {
         from 要离开的路由
         next()   //必须执行,不执行不会往后走了
     */
+//    console.log(to);
     if(to.matched.length==0){  //代表没有该页面
-        next('error')   //去到error错误页
+        next('/error')   //去到error错误页
+        //  /error是绝对路径: 无论现在是什么路径,直接变为/error
+        //  error是相对路径: 在现有路径下+error
+        
     }else{
         next();
     }
