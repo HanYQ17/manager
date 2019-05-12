@@ -120,7 +120,8 @@ const request = {
     // 获取菜单
     getMenus(){
         return axios.get(`menus`)
-    }
+    },
+    
     
 }
 
