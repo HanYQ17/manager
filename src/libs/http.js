@@ -125,6 +125,14 @@ const request = {
     getCategories(){
         return axios.get(`categories?type=3`)
     },
+    // 静态参数
+    getStatic(id){
+        return axios.get(`categories/${id}/attributes?sel=only`)
+    },
+    // 动态参数
+    getDynamic(id){
+        return axios.get(`categories/${id}/attributes?sel=only`)
+    }
 }
 
 // 暴露一个包含install方法的对象,让外部可以Vue.use

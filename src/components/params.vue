@@ -27,9 +27,9 @@
           </el-col>
         </el-row>
         <!-- table表格 -->
-        <el-table  style="width: 100%" border>
+        <el-table :data="dynamicTable" style="width: 100%" border>
           <el-table-column type="index"></el-table-column>
-          <el-table-column  label="商品参数" width="180"></el-table-column>
+          <el-table-column prop="attr_name" label="商品参数" width="180"></el-table-column>
           <el-table-column label="操作" width="180">
             <template>
               <el-button type="primary" icon="el-icon-edit" plain size="mini"></el-button>
@@ -48,11 +48,15 @@
           </el-col>
         </el-row>
         <!-- table表格 -->
-        <el-table  style="width: 100%" border>
+        <el-table :data="staticTable" style="width: 100%" border>
           <el-table-column type="index"></el-table-column>
-          <el-table-column  label="属性名称" width="180"></el-table-column>
-          <el-table-column  label="属性值" width="180"></el-table-column>
+          <el-table-column prop="attr_name" label="属性名称" width="180"></el-table-column>
+          <el-table-column prop="attr_vals" label="属性值" width="180"></el-table-column>
           <el-table-column label="操作">
+            <template>
+              <el-button type="primary" icon="el-icon-edit" plain size="mini"></el-button>
+              <el-button type="danger" icon="el-icon-delete" plain size="mini"></el-button>
+            </template>
           </el-table-column>
         </el-table>
       </el-tab-pane>
@@ -77,6 +81,8 @@ export default {
         value: "cat_id",
         children: "children"
       },
+      staticTable: [], //静态数据
+      dynamicTable: [] //动态数据
     };
   },
   created() {
@@ -92,7 +98,17 @@ export default {
     },
     // 级联选择器值改变时
     change(value) {
-      console.log(value);
+      // console.log(value);
+      // 只允许为第三级分类设置相关参数,所以要判断
+      if (value.length == 3) { //组数长度为3时
+        const id = value[2]; //取第三个参数
+        this.$request.getStatic(id).then(res => {//获取静态参数
+          this.staticTable = res.data.data;
+        });
+        this.$request.getDynamic(id).then(res => {//获取动态参数
+          this.dynamicTable = res.data.data;
+        });
+      }
     }
   }
 };
